@@ -1,4 +1,4 @@
-# FastAPI + PostgreSQL Learning Journey 🚀
+# FastAPI + PostgreSQL Learning Journey 
 
 This repository documents my **daily learning and practice** while learning **FastAPI, PostgreSQL, and Python backend development**.
 
