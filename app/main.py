@@ -1,4 +1,4 @@
-from fastapi import Body, FastAPI,HTTPException,status
+from fastapi import Body, FastAPI,HTTPException,status, Depends
 from fastapi.params import Body
 from pydantic import BaseModel
 from random import randrange
@@ -7,9 +7,15 @@ from psycopg.rows import dict_row
 import time
 import os
 from dotenv import load_dotenv
+from . import models
+from .database import engine, SessionLocal, get_db
+from sqlalchemy.orm import Session
 
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+
 
 class  Post(BaseModel):
     name: str
@@ -30,13 +36,16 @@ while True:
 async def root():                        #async keyword is used to perform task asyncronously
     return "hi++"                        #pydantic has nothing to do with fastapi it is usally used to define a shcemea
 
+##############Sends SQL queries to the db while aqlalchemy is an orm will take the python code and talk to the db by converting it to SQL
+##############in this method manual creation of tables inpostgres was done while using SQLAlchemy we can build or define a schema for the table using the python code (NoSQL) 
+
+
 
 
 @app.get("/products")
 def welcome():
     x = cur.execute("""SELECT * FROM products""").fetchall()
     return {"data": x}
-
 
 
 
@@ -83,7 +92,16 @@ def update_post(id: int, product: Post):
         return {"data" : "updated sucessfully"}    
 
 
+######################################### Using SQLAlchemy ################################
+## It can be used with any pyhton development env its not only limited to FastAPI###################
 
+
+
+
+@app.get("/sqlalchemy")
+def get_posts(db: Session = Depends(get_db)):
+    product = db.query(models.Products).all()
+    return {"data": product}
 
 
 
