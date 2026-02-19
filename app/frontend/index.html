@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Products Management</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Products Management</h1>
+      <p>Simple UI to interact with the FastAPI backend</p>
+    </header>
+
+    <section id="create">
+      <h2>Create Product</h2>
+      <form id="create-form">
+        <input id="name" placeholder="Name" required />
+        <input id="price" type="number" placeholder="Price" required />
+        <input id="inventory" type="number" placeholder="Inventory" required />
+        <button type="submit">Create</button>
+      </form>
+    </section>
+
+    <section id="list">
+      <h2>All Products</h2>
+      <div id="products"></div>
+    </section>
+
+    <section id="messages"></section>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
