@@ -5,7 +5,7 @@ from ..database import Base, engine, SessionLocal, get_db
 from typing import List
 from ..schemas import Product, ProductOut
 from .. import models
-
+from ..oauth2 import get_current_user
 router = APIRouter(
 
     prefix="/products",
@@ -48,7 +48,7 @@ def get_products(db: Session = Depends(get_db)):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model= ProductOut)
-def create_products(product: Product, db: Session = Depends(get_db)):
+def create_products(product: Product, db: Session = Depends(get_db), get_current_user: int = Depends(get_current_user)):
     # new_product = models.Products(name=product.name, price=product.price, inventory=product.inventory)
     new_product = models.Products(**product.dict())
     db.add(new_product)
