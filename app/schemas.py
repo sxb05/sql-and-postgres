@@ -1,5 +1,8 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, conint
+from typing import Annotated
+
 from datetime import datetime
+
 class  Product(BaseModel):
     name: str
     inventory: int
@@ -37,6 +40,8 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     id: int | None = None
 
-
+class Like(BaseModel):
+    prod_id: int
+    dir: Annotated[int, conint(ge=0, le=1)]
 class Config:
     orm_mode = True

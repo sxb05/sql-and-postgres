@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from . import models
 from .database import engine
 from .utils import hash_password
-from .routers import products, user, auth, review
+from .routers import products, user, auth, likes
 from .config import Settings
 
 app = FastAPI()
@@ -16,7 +16,7 @@ models.Base.metadata.create_all(bind=engine)
 app.include_router(products.router)
 app.include_router(user.router)
 app.include_router(auth.router)
-
+app.include_router(likes.router)
 
 
 
