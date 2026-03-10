@@ -1,36 +1,658 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Products Management</title>
-  <link rel="stylesheet" href="/static/style.css" />
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Products Management</h1>
-      <p>Simple UI to interact with the FastAPI backend</p>
-    </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ProductHub — Inventory Manager</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/static/style.css" />
+    </head>
+    <body>
+        <!-- ================================================================
+     AUTH SCREEN
+================================================================ -->
+        <div id="auth-screen" class="screen">
+            <div class="auth-bg">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="blob blob-3"></div>
+            </div>
 
-    <section id="create">
-      <h2>Create Product</h2>
-      <form id="create-form">
-        <input id="name" placeholder="Name" required />
-        <input id="price" type="number" placeholder="Price" required />
-        <input id="inventory" type="number" placeholder="Inventory" required />
-        <button type="submit">Create</button>
-      </form>
-    </section>
+            <div class="auth-wrap">
+                <div class="auth-brand">
+                    <span class="brand-icon">&#128230;</span>
+                    <span class="brand-name">ProductHub</span>
+                </div>
 
-    <section id="list">
-      <h2>All Products</h2>
-      <div id="products"></div>
-    </section>
+                <!-- LOGIN PANEL -->
+                <div id="login-panel" class="auth-panel">
+                    <div class="panel-head">
+                        <h1>Welcome back</h1>
+                        <p>Sign in to manage your inventory</p>
+                    </div>
+                    <form id="login-form" novalidate>
+                        <div class="field">
+                            <label for="login-email">Email address</label>
+                            <input
+                                id="login-email"
+                                type="email"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                            />
+                        </div>
+                        <div class="field">
+                            <label for="login-password">Password</label>
+                            <div class="input-wrap">
+                                <input
+                                    id="login-password"
+                                    type="password"
+                                    placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                                    autocomplete="current-password"
+                                />
+                                <button
+                                    type="button"
+                                    class="eye-btn"
+                                    data-target="login-password"
+                                >
+                                    &#128065;
+                                </button>
+                            </div>
+                        </div>
+                        <div id="login-err" class="form-err hidden"></div>
+                        <button
+                            type="submit"
+                            class="btn-primary btn-block"
+                            id="login-submit"
+                        >
+                            <span class="btn-label">Sign In</span>
+                            <span class="btn-spin hidden">&#9696;</span>
+                        </button>
+                    </form>
+                    <p class="switch-hint">
+                        No account?
+                        <button
+                            class="link-btn"
+                            onclick="showPanel('register')"
+                        >
+                            Create one &#8594;
+                        </button>
+                    </p>
+                </div>
 
-    <section id="messages"></section>
-  </div>
+                <!-- REGISTER PANEL -->
+                <div id="register-panel" class="auth-panel hidden">
+                    <div class="panel-head">
+                        <h1>Create account</h1>
+                        <p>Start managing your inventory today</p>
+                    </div>
+                    <form id="register-form" novalidate>
+                        <div class="field">
+                            <label for="reg-email">Email address</label>
+                            <input
+                                id="reg-email"
+                                type="email"
+                                placeholder="you@example.com"
+                            />
+                        </div>
+                        <div class="field">
+                            <label for="reg-password">Password</label>
+                            <div class="input-wrap">
+                                <input
+                                    id="reg-password"
+                                    type="password"
+                                    placeholder="At least 8 characters"
+                                />
+                                <button
+                                    type="button"
+                                    class="eye-btn"
+                                    data-target="reg-password"
+                                >
+                                    &#128065;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="reg-confirm">Confirm password</label>
+                            <div class="input-wrap">
+                                <input
+                                    id="reg-confirm"
+                                    type="password"
+                                    placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
+                                />
+                                <button
+                                    type="button"
+                                    class="eye-btn"
+                                    data-target="reg-confirm"
+                                >
+                                    &#128065;
+                                </button>
+                            </div>
+                        </div>
+                        <div id="register-err" class="form-err hidden"></div>
+                        <button
+                            type="submit"
+                            class="btn-primary btn-block"
+                            id="register-submit"
+                        >
+                            <span class="btn-label">Create Account</span>
+                            <span class="btn-spin hidden">&#9696;</span>
+                        </button>
+                    </form>
+                    <p class="switch-hint">
+                        Have an account?
+                        <button class="link-btn" onclick="showPanel('login')">
+                            Sign in &#8594;
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
 
-  <script src="/static/app.js"></script>
-</body>
+        <!-- ================================================================
+     APP SCREEN
+================================================================ -->
+        <div id="app-screen" class="screen hidden">
+            <!-- SIDEBAR -->
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-logo">
+                    <span class="brand-icon">&#128230;</span>
+                    <span class="brand-name">ProductHub</span>
+                    <button
+                        class="sidebar-x"
+                        onclick="closeSidebar()"
+                        aria-label="Close sidebar"
+                    >
+                        &#10005;
+                    </button>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <button
+                        class="nav-btn active"
+                        data-view="dashboard"
+                        onclick="setView('dashboard')"
+                    >
+                        <span class="nav-icon">&#127968;</span>
+                        <span>Dashboard</span>
+                    </button>
+                    <button
+                        class="nav-btn"
+                        data-view="products"
+                        onclick="setView('products')"
+                    >
+                        <span class="nav-icon">&#128230;</span>
+                        <span>Products</span>
+                        <span class="nav-badge" id="nav-badge">0</span>
+                    </button>
+                    <button
+                        class="nav-btn"
+                        data-view="profile"
+                        onclick="setView('profile')"
+                    >
+                        <span class="nav-icon">&#128100;</span>
+                        <span>Profile</span>
+                    </button>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="user-chip">
+                        <div class="avatar" id="sidebar-avatar">?</div>
+                        <span class="user-email-sm" id="sidebar-email"
+                            >&#8230;</span
+                        >
+                    </div>
+                    <button class="logout-btn" onclick="logout()">
+                        &#9211; Sign out
+                    </button>
+                </div>
+            </aside>
+
+            <!-- MOBILE BACKDROP -->
+            <div
+                id="sidebar-backdrop"
+                class="backdrop hidden"
+                onclick="closeSidebar()"
+            ></div>
+
+            <!-- MAIN AREA -->
+            <div class="main">
+                <!-- TOPBAR -->
+                <header class="topbar">
+                    <button
+                        class="hamburger"
+                        onclick="openSidebar()"
+                        aria-label="Open menu"
+                    >
+                        &#9776;
+                    </button>
+                    <div class="topbar-center">
+                        <span id="topbar-title" class="topbar-title"
+                            >Dashboard</span
+                        >
+                    </div>
+                    <div class="topbar-right">
+                        <div class="avatar avatar-sm" id="topbar-avatar">?</div>
+                        <span class="topbar-email" id="topbar-email"
+                            >&#8230;</span
+                        >
+                    </div>
+                </header>
+
+                <div class="content-scroll">
+                    <!-- ────────────────── DASHBOARD VIEW ────────────────── -->
+                    <section id="view-dashboard" class="view-section">
+                        <div class="page-header">
+                            <div class="page-header-text">
+                                <h1>Dashboard</h1>
+                                <p class="subtitle">
+                                    Overview of your inventory
+                                </p>
+                            </div>
+                            <button
+                                class="btn-primary"
+                                onclick="openProductModal()"
+                            >
+                                &#43; New Product
+                            </button>
+                        </div>
+
+                        <!-- STAT CARDS -->
+                        <div class="stats-row">
+                            <div class="stat-card" style="--sc: #7c3aed">
+                                <div class="stat-icon-wrap">&#128230;</div>
+                                <div class="stat-body">
+                                    <div class="stat-num" id="s-total">0</div>
+                                    <div class="stat-lbl">Total Products</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="--sc: #10b981">
+                                <div class="stat-icon-wrap">&#128176;</div>
+                                <div class="stat-body">
+                                    <div class="stat-num" id="s-value">$0</div>
+                                    <div class="stat-lbl">Portfolio Value</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="--sc: #3b82f6">
+                                <div class="stat-icon-wrap">&#128202;</div>
+                                <div class="stat-body">
+                                    <div class="stat-num" id="s-stock">0</div>
+                                    <div class="stat-lbl">Units in Stock</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="--sc: #f59e0b">
+                                <div class="stat-icon-wrap">&#128178;</div>
+                                <div class="stat-body">
+                                    <div class="stat-num" id="s-avg">$0</div>
+                                    <div class="stat-lbl">Avg. Price</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DASHBOARD GRID -->
+                        <div class="dash-grid">
+                            <div class="card">
+                                <div class="card-head">
+                                    <h2>Recent Products</h2>
+                                    <button
+                                        class="link-btn"
+                                        onclick="setView('products')"
+                                    >
+                                        View all &#8594;
+                                    </button>
+                                </div>
+                                <div id="recent-list">
+                                    <div class="skeleton-list">
+                                        <div class="skel-item"></div>
+                                        <div class="skel-item"></div>
+                                        <div class="skel-item"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-head">
+                                    <h2>Quick Actions</h2>
+                                </div>
+                                <div class="quick-actions">
+                                    <button
+                                        class="qa-btn"
+                                        onclick="openProductModal()"
+                                    >
+                                        <span class="qa-ico">&#43;</span>
+                                        <span>Add Product</span>
+                                    </button>
+                                    <button
+                                        class="qa-btn"
+                                        onclick="setView('products')"
+                                    >
+                                        <span class="qa-ico">&#128203;</span>
+                                        <span>View Inventory</span>
+                                    </button>
+                                    <button
+                                        class="qa-btn"
+                                        onclick="refreshProducts()"
+                                    >
+                                        <span class="qa-ico">&#8635;</span>
+                                        <span>Refresh Data</span>
+                                    </button>
+                                    <button
+                                        class="qa-btn"
+                                        onclick="setView('profile')"
+                                    >
+                                        <span class="qa-ico">&#128100;</span>
+                                        <span>My Profile</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ────────────────── PRODUCTS VIEW ────────────────── -->
+                    <section id="view-products" class="view-section hidden">
+                        <div class="page-header">
+                            <div class="page-header-text">
+                                <h1>Products</h1>
+                                <p class="subtitle" id="prod-subtitle">
+                                    Loading&#8230;
+                                </p>
+                            </div>
+                            <button
+                                class="btn-primary"
+                                onclick="openProductModal()"
+                            >
+                                &#43; New Product
+                            </button>
+                        </div>
+
+                        <div class="toolbar">
+                            <div class="search-box">
+                                <span class="search-ico">&#128269;</span>
+                                <input
+                                    id="search-input"
+                                    type="text"
+                                    placeholder="Search products&#8230;"
+                                    oninput="handleSearch(this.value)"
+                                />
+                                <button
+                                    id="search-clear"
+                                    class="clear-btn hidden"
+                                    onclick="clearSearch()"
+                                    aria-label="Clear search"
+                                >
+                                    &#10005;
+                                </button>
+                            </div>
+                            <div class="toolbar-right">
+                                <select
+                                    id="sort-select"
+                                    class="sort-sel"
+                                    onchange="handleSort(this.value)"
+                                >
+                                    <option value="name">Name A&#8211;Z</option>
+                                    <option value="name-desc">
+                                        Name Z&#8211;A
+                                    </option>
+                                    <option value="price-asc">
+                                        Price &#8593;
+                                    </option>
+                                    <option value="price-desc">
+                                        Price &#8595;
+                                    </option>
+                                    <option value="inventory">
+                                        Stock &#8595;
+                                    </option>
+                                    <option value="newest">Newest</option>
+                                </select>
+                                <div class="view-tog">
+                                    <button
+                                        id="tog-grid"
+                                        class="tog-btn active"
+                                        onclick="setViewMode('grid')"
+                                        title="Grid view"
+                                    >
+                                        &#8853;
+                                    </button>
+                                    <button
+                                        id="tog-list"
+                                        class="tog-btn"
+                                        onclick="setViewMode('list')"
+                                        title="List view"
+                                    >
+                                        &#9776;
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="products-container" class="prods-grid"></div>
+                    </section>
+
+                    <!-- ────────────────── PROFILE VIEW ────────────────── -->
+                    <section id="view-profile" class="view-section hidden">
+                        <div class="page-header">
+                            <div class="page-header-text">
+                                <h1>Profile</h1>
+                                <p class="subtitle">Your account details</p>
+                            </div>
+                        </div>
+
+                        <div class="profile-layout">
+                            <div class="card profile-card">
+                                <div class="profile-avatar" id="profile-avatar">
+                                    ?
+                                </div>
+                                <h2 id="profile-name">&#8230;</h2>
+                                <p class="text-muted">Product Manager</p>
+                                <div class="profile-stat-row">
+                                    <div class="p-stat">
+                                        <div class="p-stat-num" id="p-total">
+                                            0
+                                        </div>
+                                        <div class="p-stat-lbl">Products</div>
+                                    </div>
+                                    <div class="p-stat">
+                                        <div class="p-stat-num" id="p-value">
+                                            $0
+                                        </div>
+                                        <div class="p-stat-lbl">Portfolio</div>
+                                    </div>
+                                </div>
+                                <button
+                                    class="btn-danger-outline"
+                                    onclick="logout()"
+                                >
+                                    Sign Out
+                                </button>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-head">
+                                    <h2>Account Details</h2>
+                                </div>
+                                <ul class="detail-list">
+                                    <li class="detail-row">
+                                        <span class="d-lbl">User ID</span>
+                                        <span class="d-val" id="p-id"
+                                            >&#8212;</span
+                                        >
+                                    </li>
+                                    <li class="detail-row">
+                                        <span class="d-lbl">Email</span>
+                                        <span class="d-val" id="p-email"
+                                            >&#8212;</span
+                                        >
+                                    </li>
+                                    <li class="detail-row">
+                                        <span class="d-lbl">Member Since</span>
+                                        <span class="d-val" id="p-since"
+                                            >&#8212;</span
+                                        >
+                                    </li>
+                                    <li class="detail-row">
+                                        <span class="d-lbl"
+                                            >Total Products</span
+                                        >
+                                        <span class="d-val" id="p-products"
+                                            >&#8212;</span
+                                        >
+                                    </li>
+                                    <li class="detail-row">
+                                        <span class="d-lbl"
+                                            >Portfolio Value</span
+                                        >
+                                        <span class="d-val" id="p-portfolio"
+                                            >&#8212;</span
+                                        >
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <!-- /content-scroll -->
+            </div>
+            <!-- /main -->
+        </div>
+        <!-- /app-screen -->
+
+        <!-- ================================================================
+     PRODUCT MODAL (Create / Edit)
+================================================================ -->
+        <div
+            id="product-modal"
+            class="modal-overlay hidden"
+            onclick="handleModalOverlay(event)"
+        >
+            <div
+                class="modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
+            >
+                <div class="modal-head">
+                    <h2 id="modal-title">New Product</h2>
+                    <button
+                        class="modal-close"
+                        onclick="closeProductModal()"
+                        aria-label="Close"
+                    >
+                        &#10005;
+                    </button>
+                </div>
+                <form id="product-form" novalidate>
+                    <input type="hidden" id="edit-id" />
+                    <div class="field">
+                        <label for="f-name">Product Name</label>
+                        <input
+                            id="f-name"
+                            type="text"
+                            placeholder="e.g. MacBook Pro"
+                            required
+                        />
+                    </div>
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="f-price">Price (USD)</label>
+                            <div class="input-wrap">
+                                <span class="input-prefix">$</span>
+                                <input
+                                    id="f-price"
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    placeholder="999"
+                                    required
+                                    class="has-prefix"
+                                />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="f-inventory">Stock Units</label>
+                            <input
+                                id="f-inventory"
+                                type="number"
+                                min="0"
+                                step="1"
+                                placeholder="50"
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div id="modal-err" class="form-err hidden"></div>
+                    <div class="modal-actions">
+                        <button
+                            type="button"
+                            class="btn-ghost"
+                            onclick="closeProductModal()"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            class="btn-primary"
+                            id="modal-submit"
+                        >
+                            <span class="btn-label">Create Product</span>
+                            <span class="btn-spin hidden">&#9696;</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ================================================================
+     DELETE CONFIRM MODAL
+================================================================ -->
+        <div
+            id="delete-modal"
+            class="modal-overlay hidden"
+            onclick="handleDeleteOverlay(event)"
+        >
+            <div class="modal modal-sm" role="dialog" aria-modal="true">
+                <div class="modal-head">
+                    <h2>Delete Product</h2>
+                    <button
+                        class="modal-close"
+                        onclick="closeDeleteModal()"
+                        aria-label="Close"
+                    >
+                        &#10005;
+                    </button>
+                </div>
+                <p class="modal-body-p">
+                    Are you sure you want to delete
+                    <strong id="delete-product-name">this product</strong>? This
+                    action cannot be undone.
+                </p>
+                <div class="modal-actions">
+                    <button class="btn-ghost" onclick="closeDeleteModal()">
+                        Cancel
+                    </button>
+                    <button
+                        class="btn-danger"
+                        id="confirm-delete-btn"
+                        onclick="confirmDelete()"
+                    >
+                        <span class="btn-label">Delete</span>
+                        <span class="btn-spin hidden">&#9696;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================
+     TOAST CONTAINER
+================================================================ -->
+        <div
+            id="toast-container"
+            class="toast-container"
+            aria-live="polite"
+        ></div>
+
+        <script src="/static/app.js"></script>
+    </body>
 </html>

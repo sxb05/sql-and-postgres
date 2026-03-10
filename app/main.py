@@ -9,6 +9,8 @@ from .utils import hash_password
 from .routers import products, user, auth, likes
 from .config import Settings
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 
 
@@ -17,7 +19,7 @@ app = FastAPI()
 origins = ["https://www.google.com", "http://localhost:8000"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origins],
+    allow_origins=origins,
     allow_methods=["*"],    
     allow_headers=["*"],
     allow_credentials=True
@@ -32,6 +34,11 @@ app.include_router(likes.router)
 
 
 
+app.mount("/static", StaticFiles(directory="app/frontend"), name="static")
+
+@app.get("/")
+def root():
+    return FileResponse("app/frontend/index.html")
 
 
 
@@ -44,18 +51,12 @@ app.include_router(likes.router)
 
 
 
-                                                                                                                                                                                                                                                                                    # Mount frontend static files (served from app/frontend)
-                                                                                                                                                                                                                                                                                    # app.mount("/static", StaticFiles(directory="app/frontend"), name="static")
 
 
 
 
 
-
-                                                                                                                                                                                                                                                                                    # @app.get("/", response_class=FileResponse)
-                                                                                                                                                                                                                                                                                    # async def root():
-                                                                                                                                                                                                                                                                                    #     """Serve the frontend single-page application index file."""
-                                                                                                                                                                                                                                                                                    #     return FileResponse("app/frontend/index.html")
+                                                                                                                                                                                                                                                                                   
 
                                                                                                                                                                                                                                                                                     ###############Sends SQL queries to the db while aqlalchemy is an orm will take the python code and talk to the db by converting it to SQL
                                                                                                                                                                                                                                                                                     ##############in this method manual creation of tables inpostgres was done while using SQLAlchemy we can build or define a schema for the table using the python code (NoSQL) 
